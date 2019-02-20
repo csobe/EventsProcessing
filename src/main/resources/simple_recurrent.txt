@@ -1,0 +1,6 @@
+z,a,a,a,a,a,a
+b,c,a,a,a,a
+b,c,c,c,a,a,
+z,z,a,a
+z,a,a,a,a,a,z,a,a,a,a
+z,a,z,a,a,a,a
