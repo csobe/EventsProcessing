@@ -1,0 +1,138 @@
+apply plugin: 'scala'
+apply plugin: 'scalaStyle'
+
+
+group 'com.yarenty'
+version '1.0-SNAPSHOT'
+buildscript {
+    repositories {
+        maven {
+            url "http://repo1.maven.org/maven2/"
+        }
+        jcenter {
+            url "http://jcenter.bintray.com/"
+        }
+        maven {
+            url "http://plugins.gradle.org/m2/"
+        }
+        maven {
+            name "lightbend-maven-releases"
+            url "https://repo.lightbend.com/lightbend/maven-release"
+        }
+        ivy {
+            name "lightbend-ivy-release"
+            url "https://repo.lightbend.com/lightbend/ivy-releases"
+            layout "ivy"
+        }
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath "org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:1.0.1"
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.3.0"
+    }
+}
+
+
+
+
+//local definitions
+ext {
+    scalaBinaryVersion = '2.11'
+    scalaVersion = '2.11.12'
+    junitVersion = '4.12'
+
+    sparkVersion = "2.4.0"
+
+    spWaterVersion = "2.4.5" //2.2.10 doesnt work!!
+    h2oVersion = '3.22.1.3'
+
+    tfVersion = "1.11.0"
+    Http4sVersion = '0.18.21'
+
+    akkaVersion = "2.5.19"
+    akkaHttpVersion = "10.1.7"
+
+    LogbackVersion = '1.2.3'
+    Specs2Version = '4.3.0'
+    JacksonVersion = '2.9.3'
+}
+
+
+
+repositories {
+    maven {
+        url "http://repo1.maven.org/maven2/"
+    }
+    jcenter {
+        url "http://jcenter.bintray.com/"
+    }
+    maven {
+        url "http://plugins.gradle.org/m2/"
+    }
+    maven {
+        name "lightbend-maven-releases"
+        url "https://repo.lightbend.com/lightbend/maven-release"
+    }
+    ivy {
+        name "lightbend-ivy-release"
+        url "https://repo.lightbend.com/lightbend/ivy-releases"
+        layout "ivy"
+    }
+}
+
+dependencies {
+
+    def withoutServlet = {
+        exclude group: 'javax.servlet', module: 'servlet-api'
+        exclude group:"com.fasterxml.jackson.core", module:"jackson-core"
+        exclude group:"com.fasterxml.jackson.core", module:"jackson-databind"
+        exclude group:"com.fasterxml.jackson.module", module: 'jackson-module-scala_2.11'
+    }
+    
+
+    compile group: "com.fasterxml.jackson.core", name:"jackson-core", version: '2.8.4', {force = true}
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4', {force = true}
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.11', version: '2.8.4', {force = true}
+    
+    compile "org.scala-lang:scala-library:$scalaVersion"
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
+    compile group: 'org.joda', name: 'joda-convert', version: '1.8.1'
+
+    compile group: 'com.github.scopt', name: "scopt_$scalaBinaryVersion", version: '3.7.1'
+    
+    compile group: 'org.scalanlp', name: "breeze_$scalaBinaryVersion", version: '0.13.2'
+    compile group: 'io.argonaut', name: 'argonaut_2.10', version: '6.1'
+
+    compile group: "org.apache.hadoop", name: "hadoop-client", version: '2.7.2' , withoutServlet // {force = true}
+//    compile('org.apache.hadoop:hadoop-mapreduce-client-core:2.7.2') {force = true}
+
+//    compile('org.apache.hadoop:hadoop-common:2.7.2') {force = true} // r// equired for org.apache.hadoop.util.StopWatch  
+
+    
+    
+    
+    compile('commons-io:commons-io:2.4') {force = true} // required for org.apache.commons.io.Charsets that is used internally
+//    note: there are two org.apache.commons.io packages: commons-io:commons-io (ours here), and org.apache.commons:commons-io (old one, 2007). make sure to include the correct one.
+
+    compile group: 'ai.h2o', name: 'sparkling-water-core_'+scalaBinaryVersion , version: "$spWaterVersion" , withoutServlet
+    compile("ai.h2o:sparkling-water-examples_" + scalaBinaryVersion + ":" + spWaterVersion)  //optional
+
+
+
+    testCompile "junit:junit:${junitVersion}"
+    testCompile group: 'org.scalatest', name: "scalatest_$scalaBinaryVersion", version: '3.0.4'
+    testCompile group: 'org.scalanlp', name: "breeze-viz_$scalaBinaryVersion", version: '0.13.2'
+}
+
+
+scalaStyle {
+    configLocation = "$rootDir/scalastyle_config.xml"
+    includeTestSourceDirectory = true
+    source = "src/main/scala"
+    testSource = "src/test/scala"
+    outputFile = "$buildDir/checkstyle-result.xml"
+}
+        
+
